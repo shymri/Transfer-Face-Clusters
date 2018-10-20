@@ -1,0 +1,29 @@
+"""
+transfer face weights tool!!
+use this tool to transfer cluster weights from one face to the other quickly!
+some rules:
+    put all the clusters you want transfered in one group and make that group the clusterGroup variable
+    if you have grouped your clusters into groups within clusterGroup, make sure 'grp' is in the group name somewhere    
+"""
+
+import maya.cmds as mc
+
+##variables
+fileLoc = '/users/animation/shmrie42/maya/projects/default/scenes/DeathAndDelila/xmls/' #location of where you want to create and import/export weight maps
+clusterGroup = 'Death_head_geo_CLU_grp_01' #where your clusters live
+exGeo = 'RGT_Head' #the clusters you are exporting from
+imGeo = 'LFT_Head' #the clusters you are importing to
+
+getCLU = mc.listRelatives(clusterGroup, ad=True)
+exportWeights = []
+importWeights = []
+for i in range(len(getCLU)):
+    if not 'Shape' in getCLU[i] and not 'grp' in getCLU[i] and not imGeo in getCLU[i]:
+        exportWeights.append(getCLU[i])
+    if not 'Shape' in getCLU[i] and not 'grp' in getCLU[i] and not exGeo in getCLU[i]:
+        importWeights.append(getCLU[i])
+print importWeights
+
+for i in range(len(exportWeights)):
+    mc.deformerWeights(str(exportWeights[i]) + '.xml', ex = True, path = fileLoc, deformer = str(exportWeights[i]) + 'Cluster')
+    mc.deformerWeights(str(exportWeights[i]) + '.xml', im = True, path = fileLoc, deformer = str(importWeights[i]) + 'Cluster', method = "index")    
